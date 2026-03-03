@@ -6,6 +6,12 @@ PascalCase: FirstName
 JSON: new Date("2023-06-01T00:00:00Z").toISOString()
 BSON: new Date("2023-06-01")
 
+
+// Create the employees collection
+db.createCollection("employees")
+
+// Insert a new employee document into the employees collection
+// If the collection does not exist, MongoDB will create it automatically
 db.employees.insertOne(
   {
     firstName: "Jane",
@@ -16,3 +22,26 @@ db.employees.insertOne(
     hiredAt: new Date("2023-06-01")
   }
 )
+
+db.item.insertOne({
+  name: "Sample Item",
+  price: 19.99,
+  stockCount: 10,
+})
+
+db.item.insertOne({
+  name: "Sample Item 2",
+  price: 20.99,
+  stockCount: 1,
+})
+
+// delete the actual database
+db.dropDatabase()
+
+// DROP all non system databases
+db.getMongo().getDBNames().forEach((databaseName) => {
+  const systemDatabaseNames = ["admin", "config", "local"]  
+  if(systemDatabaseNames.indexOf(databaseName) === -1) {
+    db.getSiblingDB(databaseName).dropDatabase()
+  }
+})
