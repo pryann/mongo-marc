@@ -45,3 +45,29 @@ db.getMongo().getDBNames().forEach((databaseName) => {
     db.getSiblingDB(databaseName).dropDatabase()
   }
 })
+
+//  import json array of employee documents into the employees collection using the mongoimport command line tool
+mongoimport --db company --collection employees --file /data/import/employees/employees.json --jsonArray
+
+// insert Many
+
+db.emplyees.insertMany([
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "johndoe0@flickr.com",
+    "gender": "Male",
+    "yearlySalary": 200000,
+    "yearsOfExperience": 15,
+    "hiredAt": { "$date": "2025-02-09T21:26:51.000Z" }
+  },
+  {
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "janedoe0@flickr.com",
+    "gender": "Female",
+    "yearlySalary": 205000,
+    "yearsOfExperience": 16,
+    "hiredAt": { "$date": "2023-02-09T12:11:00.000Z" }
+  }
+])
