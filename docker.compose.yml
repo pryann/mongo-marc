@@ -1,0 +1,12 @@
+services:
+  mogodb:
+    image: mongo:latest
+    container_name: mongodb-t360
+    command: ["--replSet", "rs0"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/import
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
