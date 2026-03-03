@@ -1,0 +1,18 @@
+snake case: first_name
+kebab: first-name
+camelCase: firstName
+PascalCase: FirstName
+
+JSON: new Date("2023-06-01T00:00:00Z").toISOString()
+BSON: new Date("2023-06-01")
+
+db.employees.insertOne(
+  {
+    firstName: "Jane",
+    lastName: "Doe",
+    emailAddress: "jane.doe@deadmail.com",
+    yearlySalary: 125000,
+    yearsOfExperience: 8,
+    hiredAt: new Date("2023-06-01")
+  }
+)
