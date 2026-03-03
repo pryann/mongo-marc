@@ -51,7 +51,7 @@ mongoimport --db company --collection employees --file /data/import/employees/em
 
 // insert Many
 
-db.emplyees.insertMany([
+db.employees.insertMany([
   {
     "firstName": "John",
     "lastName": "Doe",
