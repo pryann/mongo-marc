@@ -261,6 +261,7 @@ db.createCollection('employees', {
         $jsonSchema: {
             type: 'object',
             required: ['id', 'email'],
+            additionalProperties: false,
             properties: {
                 id: {
                     bsonType: 'int',
@@ -295,3 +296,155 @@ db.createCollection('employees', {
         },
     },
 })
+
+// overwrite validator
+db.runCommand({
+    collMod: 'employees',
+    validator: {
+        $jsonSchema: {
+            type: 'object',
+            required: ['id', 'email'],
+            additionalProperties: false,
+            properties: {
+                _id: {},
+                id: {
+                    bsonType: 'int',
+                    description: 'must be an integer and is required',
+                },
+                email: {
+                    bsonType: 'string',
+                    pattern: '^[a-z0-9_]+@[a-z0-9]+\\.[a-z]{2,}$',
+                    description: 'must be a string and match the email pattern',
+                },
+                firstName: {
+                    bsonType: 'string',
+                    description: 'must be a string',
+                },
+                lastName: {
+                    bsonType: 'string',
+                    description: 'must be a string',
+                },
+                yearlySalary: {
+                    bsonType: 'int',
+                    description: 'must be an integer',
+                },
+                yearsOfExperience: {
+                    bsonType: 'int',
+                    description: 'must be an integer',
+                },
+                hiredAt: {
+                    bsonType: 'date',
+                    description: 'must be a date',
+                },
+            },
+        },
+    },
+    validationAction: 'warn',
+})
+
+// delete validator
+db.runCommand({
+    collMod: 'employees',
+    validator: {},
+})
+
+// $sum
+
+db.employees.aggregate([
+    {
+        $group: {
+            _id: null,
+            totalAnnualSalaryExpense: {
+                $sum: '$yearlySalary',
+            },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            totalAnnualSalaryExpense: 1,
+        },
+    },
+])
+
+// $avg
+db.employees.aggregate([
+    {
+        $group: {
+            _id: null,
+            averageAnnualSalary: {
+                $avg: '$yearlySalary',
+            },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            averageAnnualSalary: 1,
+        },
+    },
+])
+
+// $min $max
+
+db.employees.aggregate([
+    {
+        $group: {
+            _id: null,
+            minimumSalary: {
+                $min: '$yearlySalary',
+            },
+            maximumSalary: {
+                $max: '$yearlySalary',
+            },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            minimumSalary: 1,
+            maximumSalary: 1,
+        },
+    },
+])
+
+// $first, $last, $sort
+
+db.employees.aggregate([
+    {
+        $sort: {
+            hiredAt: 1,
+        },
+    },
+    {
+        $group: {
+            _id: '$gender',
+            firstHired: { $first: '$firstName' },
+            lastHired: { $last: '$firstName' },
+        },
+    },
+])
+
+// $addToSet
+
+db.employees.aggregate([
+    {
+        $group: {
+            _id: null,
+            uniqueGenders: { $addToSet: '$gender' },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            uniqueGenders: 1,
+        },
+    },
+])
+
+db.employees.aggregate([
+    { $sort: { yearlySalary: -1 } },
+    { $skip: 10 },
+    { $limit: 5 },
+    { $project: { email: 1, yearlySalary: 1, _id: 0 } },
+])

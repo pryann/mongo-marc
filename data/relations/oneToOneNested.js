@@ -1,0 +1,40 @@
+db = db.getSiblingDB('oneToOneNested')
+db.users.drop()
+
+db.createCollection('users', {
+    validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            required: ['firstName', 'lastName', 'email', 'address'],
+            properties: {
+                firstName: { bsonType: 'string' },
+                lastName: { bsonType: 'string' },
+                email: { bsonType: 'string', pattern: '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$' },
+                address: {
+                    bsonType: 'object',
+                    required: ['country', 'zipCode', 'city', 'address'],
+                    properties: {
+                        country: { bsonType: 'string' },
+                        zipCode: { bsonType: 'string' },
+                        city: { bsonType: 'string' },
+                        address: { bsonType: 'string' },
+                    },
+                },
+            },
+        },
+    },
+})
+
+db.users.insertOne({
+    firstName: 'Anna',
+    lastName: 'Kiss',
+    email: 'anna.kiss@example.com',
+    address: {
+        country: 'Hungary',
+        zipCode: '1111',
+        city: 'Budapest',
+        address: 'Fő utca 1.',
+    },
+})
+
+printjson(db.users.find().toArray())
