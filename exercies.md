@@ -9,7 +9,7 @@
 // Éves fizetés 150 000 és 200 000 között, csökkenő sorrendben
 // Csak firstName, lastName, yearlySalary mezők (_id nélkül)
 db.employees.find(
-  { yearlySalary: { $gte: 150000, $lte: 200000 } },
+  { yearlySalary: { $gte: 150_000, $lte: 200_000 } },
   { firstName: 1, lastName: 1, yearlySalary: 1, _id: 0 }
 ).sort({ yearlySalary: -1 })
 ```
@@ -25,8 +25,7 @@ db.employees.find(
 // Megjegyzés: A $not operátor regex-nél nem támogatott, helyette $and javasolt
 // Alternatív megoldás:
 db.employees.countDocuments({
-  email: { $regex: \.com$ },
-  email: { $not: /flickr\.com$/ }
+  email: { $regex: /\.com$/, $not: /flickr\.com$/ }
 })
 ```
 
@@ -65,7 +64,7 @@ db.employees.find(
 // 2025 januárban felvettek VAGY nem Male/Female neműek
 db.employees.find({
   $or: [
-    { hiredAt: { $gte: new Date("2025-01-01"), $lte: new Date("2025-01-31T23:59:59Z") } },
+    { hiredAt: { $gte: new Date("2025-01-01"), $lte: new Date("2025-01-31") } },
     { gender: { $nin: ["Male", "Female"] } }
   ]
 }).sort({ hiredAt: 1 })
