@@ -242,3 +242,56 @@ db.employees.findOneAndUpdate(
     { projection: { firstName: 1, lastName: 1, email: 1, _id: 0 }, returnDocument: 'after' },
     { returnDocument: 'after' },
 )
+
+// MODIFY FIELDS
+// $rename - rename a field
+db.employees.updateMany({}, { $rename: { yearlySalary: 'annualSalary' } })
+
+// $unset - remove a field from the document
+db.employees.updateMany({}, { $unset: { gender: '' } })
+
+db.employees.find().forEach((doc) => {
+    db.employees.updateOne({ _id: doc._id }, { $set: { annualSalary: NumberDecimal(doc.annualSalary) } })
+})
+
+// VALIDATON
+// it is not a real life regex for email validation, but it is just for demonstration purposes
+db.createCollection('employees', {
+    validator: {
+        $jsonSchema: {
+            type: 'object',
+            required: ['id', 'email'],
+            properties: {
+                id: {
+                    bsonType: 'int',
+                    description: 'must be an integer and is required',
+                },
+                email: {
+                    bsonType: 'string',
+                    pattern: '^[a-z0-9_]+@[a-z0-9]+\\.[a-z]{2,}$',
+                    description: 'must be a string and match the email pattern',
+                },
+                firstName: {
+                    bsonType: 'string',
+                    description: 'must be a string',
+                },
+                lastName: {
+                    bsonType: 'string',
+                    description: 'must be a string',
+                },
+                yearlySalary: {
+                    bsonType: 'int',
+                    description: 'must be an integer',
+                },
+                yearsOfExperience: {
+                    bsonType: 'int',
+                    description: 'must be an integer',
+                },
+                hiredAt: {
+                    bsonType: 'date',
+                    description: 'must be a date',
+                },
+            },
+        },
+    },
+})

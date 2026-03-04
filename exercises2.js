@@ -26,3 +26,51 @@ db.employees.findOneAndUpdate(
     { $set: { firstName: 'New', lastName: 'Hire', yearlySalary: 80000 } },
     { upsert: true, returnDocument: 'after' },
 )
+
+// ARRAY
+// $addToSet – elem hozzáadása tömbhöz, csak ha még nem szerepel benne
+// $push – elem hozzáadása tömbhöz (duplikáció engedélyezett)
+// $pull – adott érték(ek) eltávolítása tömbből
+// $pop – első vagy utolsó elem eltávolítása tömbből
+
+db.employees.updateOne({ id: 1 }, { $set: { skills: ['Python', 'JavaScript', 'Java'] } })
+
+// $addToSet
+db.employees.updateOne(
+    { id: 1 },
+    {
+        $addToSet: {
+            skills: 'MongoDB',
+        },
+    },
+)
+
+// $push
+db.employees.updateOne(
+    { id: 1 },
+    {
+        $push: {
+            skills: 'MongoDB',
+        },
+    },
+)
+
+// $pull - remove all occurrences of 'MongoDB' from the skills array
+db.employees.updateOne(
+    { id: 1 },
+    {
+        $pull: {
+            skills: 'MongoDB',
+        },
+    },
+)
+
+// $pop - remove the first/last element from the skills array
+db.employees.updateOne(
+    { id: 1 },
+    {
+        $pop: {
+            skills: 1, // 1 for last element, -1 for first element
+        },
+    },
+)
