@@ -164,3 +164,81 @@ db.employees.find({}, { email: 1, _id: 0 })
 
 // pagination
 db.employees.find().sort({ id: 1 }).limit(10).skip(20)
+
+// deleteOne
+db.employees.deleteOne({ _id: ObjectId('69a6d35b39e2719d91f1d0dc') })
+
+// deleteMany
+// delete all employees, but keep the collection and its indexes
+db.employees.deleteMany({})
+
+// deleteMany with filter: delete all employees with less than 10 years of experience
+db.employees.deleteMany({ yearsOfExperience: { $lt: 10 } })
+
+// drop the collection
+db.employees.drop()
+
+// UPDATE
+// $inc – numerikus mező növelése/csökkentése adott értékkel
+// $mul – numerikus mező szorzása adott értékkel
+// $min – csak akkor állítja be az értéket, ha az új érték kisebb, mint a jelenlegi
+// $max – csak akkor állítja be az értéket, ha az új érték nagyobb, mint a jelenlegi
+// $currentDate – mező értékének aktuális dátumra/időre állítása
+
+// updateOne
+db.employees.updateOne(
+    { _id: ObjectId('69a6d35b39e2719d91f1d0a9') },
+    {
+        $set: {
+            email: 'UPDATED_EMAIL_ADDRESS@DOMAIN.COM',
+        },
+    },
+)
+
+// ellenőrzés
+db.employees.findOne({ _id: ObjectId('69a6d35b39e2719d91f1d0a9') })
+
+// updateMany
+// increment the yearlySalary field by 5% for all employees
+db.employees.updateMany(
+    {},
+    {
+        $mul: { yearlySalary: 1.05 },
+    },
+)
+// updateMany
+// increment the yearlySalary field by 5%, where the employee salary less than 180000
+db.employees.updateMany({ yearlySalary: { $lt: 180_000 } }, { $mul: { yearlySalary: 1.05 } })
+
+// upsert
+// MERGE INTO employees e
+// USING (SELECT 101 AS emp_id, 'Uzumaki Naruto' AS name, 5000 AS salary FROM dual) s
+// ON (e.emp_id = s.emp_id)
+// WHEN MATCHED THEN
+//     UPDATE SET e.salary = s.salary
+// WHEN NOT MATCHED THEN
+//     INSERT (emp_id, name, salary) VALUES (s.emp_id, s.name, s.salary);
+
+db.employees.updateOne(
+    { _id: ObjectId('69a6d35b39e2719d91f1d0a1') },
+    { $set: { firstName: 'Uzumaki', lastName: 'Naruto', yearlySalary: 5000 } },
+    { upsert: true },
+)
+
+// min - only update the yearlySalary field if the new value is less than the current value
+db.employees.updateOne({ _id: ObjectId('69a6d35b39e2719d91f1d0a1') }, { $min: { yearlySalary: 5000 } })
+
+// max - only update the yearlySalary field if the new value is greater than the current value
+db.employees.updateOne({ _id: ObjectId('69a6d35b39e2719d91f1d0a1') }, { $max: { yearlySalary: 5000 } })
+
+// $currentDate - set the field to the current date
+db.employees.updateOne({ _id: ObjectId('69a6d35b39e2719d91f1d0a1') }, { $currentDate: { hiredAt: true } })
+
+// findOneAndUpdate - return the document
+
+db.employees.findOneAndUpdate(
+    { _id: ObjectId('69a6d35b39e2719d91f1d0a1') },
+    { $set: { email: 'uzumaki.naruto@domain.jp' } },
+    { projection: { firstName: 1, lastName: 1, email: 1, _id: 0 }, returnDocument: 'after' },
+    { returnDocument: 'after' },
+)
