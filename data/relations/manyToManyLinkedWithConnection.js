@@ -77,7 +77,7 @@ printjson(
         .aggregate([
             {
                 $lookup: {
-                    from: 'teacher_student',
+                    from: 'teacherStudent',
                     localField: '_id',
                     foreignField: 'teacherId',
                     as: 'connections',

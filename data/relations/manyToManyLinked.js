@@ -12,7 +12,6 @@ db.createCollection('teachers', {
                 name: { bsonType: 'string' },
                 students: {
                     bsonType: 'array',
-                    description: 'A tanárhoz tartozó diákok ObjectId-i',
                     items: { bsonType: 'objectId' },
                 },
             },
@@ -29,7 +28,6 @@ db.createCollection('students', {
                 name: { bsonType: 'string' },
                 teachers: {
                     bsonType: 'array',
-                    description: 'A diákhoz tartozó tanárok ObjectId-i',
                     items: { bsonType: 'objectId' },
                 },
             },

@@ -77,17 +77,15 @@ printjson(db.addresses.find().toArray())
 // $lookup példa: felhasználók a cím adataival
 print('Felhasználók a címekkel (lookup):')
 printjson(
-    db.users
-        .aggregate([
-            {
-                $lookup: {
-                    from: 'addresses',
-                    localField: 'addressId',
-                    foreignField: '_id',
-                    as: 'address',
-                },
+    db.users.aggregate([
+        {
+            $lookup: {
+                from: 'addresses',
+                localField: 'addressId',
+                foreignField: '_id',
+                as: 'address',
             },
-            { $unwind: '$address' },
-        ])
-        .toArray(),
+        },
+        { $unwind: '$address' },
+    ]),
 )

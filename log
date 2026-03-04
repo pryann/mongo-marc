@@ -1,0 +1,73 @@
+
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'company.employees',
+    parsedQuery: { email: { '$eq': 'omarringtonk@salon.com' } },
+    indexFilterSet: false,
+    queryHash: '2C2F10E4',
+    planCacheShapeHash: '2C2F10E4',
+    planCacheKey: 'F713C797',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'EXPRESS_IXSCAN',
+      keyPattern: '{ email: 1 }',
+      indexName: 'email_unique_idx'
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 0,
+    totalKeysExamined: 1,
+    totalDocsExamined: 1,
+    executionStages: {
+      isCached: false,
+      stage: 'EXPRESS_IXSCAN',
+      keyPattern: '{ email: 1 }',
+      indexName: 'email_unique_idx',
+      keysExamined: 1,
+      docsExamined: 1,
+      nReturned: 1
+    }
+  },
+  queryShapeHash: 'EF059FE691510E4A4C314AA434C93427179CE2EE2F83B118A89B24F410154D68',
+  command: {
+    find: 'employees',
+    filter: { email: 'omarringtonk@salon.com' },
+    '$db': 'company'
+  },
+  serverInfo: {
+    host: 'dc095dfed1b8',
+    port: 27017,
+    version: '8.2.5',
+    gitVersion: 'a471a13094434666c48a1f75451f2efa49f8f5df'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1772632830, i: 1 }),
+    signature: {
+      hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+      keyId: Long('0')
+    }
+  },
+  operationTime: Timestamp({ t: 1772632830, i: 1 })
+}

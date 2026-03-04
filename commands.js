@@ -448,3 +448,153 @@ db.employees.aggregate([
     { $limit: 5 },
     { $project: { email: 1, yearlySalary: 1, _id: 0 } },
 ])
+
+// Load
+load('/data/import/relations/oneToOneNested.js')
+db.users.insertOne({
+    firstName: 'Lajos',
+    lastName: 'Kiss',
+    address: {
+        country: 'Hungary',
+        zipCode: '1111',
+        city: 'Budapest',
+        address: 'Fő utca 1.',
+    },
+})
+
+db.students.aggregate([
+    {
+        $lookup: {
+            from: 'teachers',
+            localField: 'teachers',
+            foreignField: '_id',
+            as: 'teacherList',
+        },
+    },
+    {
+        $project: {
+            name: 1,
+            teacherList: { name: 1 },
+        },
+    },
+])
+
+// FULL JOIN
+db.teachers.aggregate([
+    // Tanárok → diákok irány
+    {
+        $lookup: {
+            from: 'students',
+            localField: 'students',
+            foreignField: '_id',
+            as: 'studentList',
+        },
+    },
+    {
+        $project: {
+            type: { $literal: 'teacher' },
+            name: 1,
+            related: '$studentList.name',
+        },
+    },
+    // UNION: Diákok → tanárok irány
+    {
+        $unionWith: {
+            coll: 'students',
+            pipeline: [
+                {
+                    $lookup: {
+                        from: 'teachers',
+                        localField: 'teachers',
+                        foreignField: '_id',
+                        as: 'teacherList',
+                    },
+                },
+                {
+                    $project: {
+                        type: { $literal: 'student' },
+                        name: 1,
+                        related: '$teacherList.name',
+                    },
+                },
+            ],
+        },
+    },
+])
+
+// create indexes
+db.employees.createIndex({ email: 1 }, { unique: true, name: 'email_unique_idx' })
+
+db.employees.createIndex({ lastName: 1, firstName: 1 }, { name: 'name_idx' })
+
+// find with index, and check the execution plan to see if the index is used
+db.employees.find({ email: 'omarringtonk@salon.com' }).explain('executionStats')
+
+// list indexes
+db.employees.getIndexes()
+
+// drop index by name
+db.employees.dropIndex('email_unique_idx')
+
+// drop all indexes
+db.employees.dropIndexes()
+
+// USER MANAGEMENT
+
+// create a new user with readWrite role on the company database, read role on the oneToManyLinked database and dbAdmin role on the users database
+db.createUser({
+    user: 'app_user',
+    pwd: 'app_password',
+    roles: [
+        { role: 'readWrite', db: 'company' },
+        { role: 'dbAdmin', db: 'users' },
+        { role: 'read', db: 'oneToManyLinked' },
+    ],
+})
+
+// update user roles: add read role on the oneToOneNested database
+db.grantRolesToUser('app_user', [{ role: 'read', db: 'oneToOneNested' }])
+
+// update user roles: remove read role on the oneToManyLinked database
+db.revokeRolesFromUser('app_user', [{ role: 'read', db: 'oneToOneNested' }])
+
+// change user password
+db.updateUser('app_user', { pwd: 'password' })
+
+// authenticate as the app_user
+db.getUser('app_user')
+
+// authenticate with the new password
+db.getUsers()
+
+// check the current connection status to see the authenticated user and its roles
+db.runCommand({ connectionStatus: 1 })
+
+// drop the user
+db.dropUser('app_user')
+
+// authenticate with the admin user
+// mongosh -u admin -p admin_password --authenticationDatabase admin
+
+// mongosh "mongodb://username:password@localhost:27017/databaseName?authSource=admin"
+
+// if inside mongosh
+db.auth('username', 'password   ')
+
+// EXPORT/IMPORT
+
+// import: see above with mongoimport command
+
+// mongoexport --db company --collection employees --out /data/export/employees.json --jsonArray
+// mongoexport --db company --collection employees --type=csv --fields firstName,lastName,email --out /data/export/employees.csv
+
+// BACKUP/RESTORE
+// ONLY ONE DB
+// mongodump --db company --out /data/backup/company_backup
+
+// ALL DBs
+// mongodump --out /data/backup/full_backup
+
+// restore a single database
+// mongorestore --db company /data/backup/company_backup
+// mongorestore ./data/backup/full_backup
